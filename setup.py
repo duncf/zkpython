@@ -17,9 +17,11 @@
 from setuptools import setup, Extension
 
 
-zookeepermodule = Extension("zookeeper",
+zookeepermodule = Extension("_zookeeper",
                             sources=["zookeeper.c"],
-                            include_dirs=["/usr/include/c-client-src", "/usr/local/include/c-client-src"],
+                            include_dirs=["/usr/include/zookeeper",
+                                          "/usr/include/c-client-src",
+                                          "/usr/local/include/c-client-src"],
                             libraries=["zookeeper_mt"],
                             )
 

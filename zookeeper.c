@@ -19,7 +19,7 @@
 #include <Python.h>
 #include <zookeeper.h>
 #include <assert.h>
-  
+
 //////////////////////////////////////////////
 // EXCEPTIONS
 PyObject *ZooKeeperException = NULL;
@@ -1075,7 +1075,7 @@ static PyObject *pyzoo_exists(PyObject *self, PyObject *args)
     return Py_None; // This isn't exceptional
   }
   return build_stat(&stat);
-}
+}        
 
 /* Synchronous node child retrieval, returns list of children's path
    as strings */
@@ -1268,17 +1268,21 @@ PyObject *pyzoo_set_acl(PyObject *self, PyObject *args)
 /* Closes a connection, returns integer error code */
 PyObject *pyzoo_close(PyObject *self, PyObject *args)
 {
-  int zkhid, ret;
+  int zkhid, err;
   if (!PyArg_ParseTuple(args, "i", &zkhid)) {
     return NULL;
   }
   CHECK_ZHANDLE(zkhid);
   zhandle_t *handle = zhandles[zkhid];
   Py_BEGIN_ALLOW_THREADS
-  ret = zookeeper_close(handle);
+  err = zookeeper_close(handle);
   Py_END_ALLOW_THREADS
   zhandles[zkhid] = NULL; // The zk C client frees the zhandle
-  return Py_BuildValue("i", ret);
+  if (err != ZOK) {
+    PyErr_SetString(err_to_exception(err), zerror(err));
+    return NULL;
+  }
+  return Py_BuildValue("i", err);
 }
 
 /* Returns the ID of current client as a tuple (client_id, passwd) */
@@ -1433,16 +1437,22 @@ PyObject *pyzoo_set_log_stream(PyObject *self, PyObject *args)
   }
   /* Release the previous reference to log_stream that we took */
   if (log_stream != NULL) {
+    PyFile_DecUseCount((PyFileObject*)log_stream);
     Py_DECREF(log_stream);
   }
 
   log_stream = pystream;
   Py_INCREF(log_stream);
+  PyFile_IncUseCount((PyFileObject*)log_stream);
   zoo_set_log_stream(PyFile_AsFile(log_stream));
 
   Py_INCREF(Py_None);
   return Py_None;
 }
+
+static PyObject *log_handler = NULL;
+
+/*
 
 /* Set the connection order - randomized or in-order. Returns None. */
 PyObject *pyzoo_deterministic_conn_order(PyObject *self, PyObject *args)
@@ -1503,19 +1513,19 @@ static PyMethodDef ZooKeeperMethods[] = {
 #define ADD_INTCONSTANT(x) PyModule_AddIntConstant(module, #x, ZOO_##x)
 #define ADD_INTCONSTANTZ(x) PyModule_AddIntConstant(module, #x, Z##x)
 
-#define ADD_EXCEPTION(x) x = PyErr_NewException("zookeeper."#x, ZooKeeperException, NULL); \
+#define ADD_EXCEPTION(x) x = PyErr_NewException("_zookeeper."#x, ZooKeeperException, NULL); \
   Py_INCREF(x);                                                         \
   PyModule_AddObject(module, #x, x);
 
 
-PyMODINIT_FUNC initzookeeper(void) {
+PyMODINIT_FUNC init_zookeeper(void) {
   PyEval_InitThreads();
-  PyObject *module = Py_InitModule("zookeeper", ZooKeeperMethods );
+  PyObject *module = Py_InitModule("_zookeeper", ZooKeeperMethods );
   if (init_zhandles(32) == 0) {
     return; // TODO: Is there any way to raise an exception here?
   }
 
-  ZooKeeperException = PyErr_NewException("zookeeper.ZooKeeperException",
+  ZooKeeperException = PyErr_NewException("_zookeeper.ZooKeeperException",
                                           PyExc_Exception,
                                           NULL);
 
