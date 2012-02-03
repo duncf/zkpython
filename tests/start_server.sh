@@ -1,0 +1,1 @@
+java -cp /usr/share/java/jline.jar:/usr/share/java/log4j-1.2.jar:/usr/share/java/xercesImpl.jar:/usr/share/java/xmlParserAPIs.jar:/usr/share/java/zookeeper.jar org.apache.zookeeper.server.ZooKeeperServerMain 22182 /tmp/zkdata
