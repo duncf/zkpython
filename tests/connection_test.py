@@ -16,9 +16,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest, threading, re
+import re
+import threading
+import unittest2 as unittest
 
-import zookeeper, zktestbase
+import _zookeeper as zookeeper
+
+import zktestbase
+
 ZOO_OPEN_ACL_UNSAFE = {"perms":0x1f, "scheme":"world", "id" :"anyone"}
 
 class ConnectionTest(zktestbase.TestBase):

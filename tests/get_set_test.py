@@ -16,7 +16,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import zookeeper, zktestbase, unittest, threading
+import os
+import threading
+import unittest2 as unittest
+
+import _zookeeper as zookeeper
+
+import zktestbase
+
 ZOO_OPEN_ACL_UNSAFE = {"perms":0x1f, "scheme":"world", "id" :"anyone"}
 
 class GetSetTest(zktestbase.TestBase):

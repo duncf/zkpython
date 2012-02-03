@@ -16,7 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import zookeeper, zktestbase, unittest, threading
+import threading
+import unittest2 as unittest
+import _zookeeper as zookeeper
+
+import zktestbase
 
 ZOO_OPEN_ACL_UNSAFE = {"perms":zookeeper.PERM_ALL, "scheme":"world", "id" :"anyone"}
 ZOO_ACL_READ = {"perms":zookeeper.PERM_READ, "scheme": "world",
