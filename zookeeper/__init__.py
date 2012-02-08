@@ -188,7 +188,8 @@ class ZooKeeper(object):
         :Exceptions:
             - TODO
         """
-	watcher = self._wrap_watcher(watcher)
+        if watcher:
+            watcher = self._wrap_watcher(watcher)
 
         if client_id:
             self._zk_handle = _zookeeper.init(
@@ -520,4 +521,8 @@ class ZooKeeper(object):
 
     def get_state(self):
 	val = _zookeeper.state(self.zk_handle)
+        if val == 0:
+            # Looks like a bug in the ZooKeeper C bindings -- this is the
+            # initial state and the state after disconnecting.
+            return zookeeper.constants.CONNECTING_STATE
 	return val
