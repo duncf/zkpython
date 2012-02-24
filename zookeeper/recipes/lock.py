@@ -158,9 +158,12 @@ class Lock(object):
 
             # We just created children, this should never be empty.
             assert children
+            assert self._my_node_name in children
 
             children.sort(key=_sort_key_for_sequence)
             owner_name = children[0]
+
+            self._log.info('Children: %s' % (children,))
 
             # Only look at children before me.
             my_index = children.index(self._my_node_name)
@@ -183,7 +186,7 @@ class Lock(object):
                 assert owner_name == self._my_node_name
                 if self._callback is not None:
                     self._log.info('Have lock (%s), calling callback.',
-                                   owner_name)
+                                   self._my_node)
                     self._callback()
                 return True
 
