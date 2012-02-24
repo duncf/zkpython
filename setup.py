@@ -26,7 +26,7 @@ zookeepermodule = Extension("_zookeeper",
                             )
 
 setup(name="zkpython",
-      version="0.4",
+      version="0.4-duncan",
       description="ZooKeeper Python bindings",
       ext_modules=[zookeepermodule],
       packages=["zookeeper", "zookeeper.recipes"]
