@@ -20,13 +20,14 @@ from setuptools import setup, Extension
 zookeepermodule = Extension("_zookeeper",
                             sources=["zookeeper.c"],
                             include_dirs=["/usr/include/zookeeper",
+                                          "/usr/local/include/zookeeper",
                                           "/usr/include/c-client-src",
                                           "/usr/local/include/c-client-src"],
                             libraries=["zookeeper_mt"],
                             )
 
 setup(name="zkpython",
-      version="0.4-duncan",
+      version="0.4-duncan1",
       description="ZooKeeper Python bindings",
       ext_modules=[zookeepermodule],
       packages=["zookeeper", "zookeeper.recipes"]
