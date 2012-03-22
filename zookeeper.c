@@ -1443,10 +1443,6 @@ PyObject *pyzoo_set_log_stream(PyObject *self, PyObject *args)
   return Py_None;
 }
 
-static PyObject *log_handler = NULL;
-
-/*
-
 /* Set the connection order - randomized or in-order. Returns None. */
 PyObject *pyzoo_deterministic_conn_order(PyObject *self, PyObject *args)
 {
